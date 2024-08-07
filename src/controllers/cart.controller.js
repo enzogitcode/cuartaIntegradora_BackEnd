@@ -1,6 +1,14 @@
 import CartRepository from "../repositories/cart.repository.js"
 const cartRepository = new CartRepository()
 class CartController {
+    async getAllCarts (req, res) {
+        try {
+            const carts= await cartRepository.getAllCarts()
+            res.json(carts)
+        } catch (error) {
+            console.log(error)
+        }
+    }
     async newCart(req, res) {
         try {
             const newCart = await cartRepository.createCart()
@@ -104,7 +112,7 @@ class CartController {
         }
 
     }
-    async purchase() { 
+    async purchase(req, res) { 
         
     }
 }

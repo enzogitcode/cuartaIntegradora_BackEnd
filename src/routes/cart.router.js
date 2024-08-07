@@ -3,6 +3,8 @@ const router = express.Router()
 import CartController from '../controllers/cart.controller.js'
 const cartController = new CartController
 
+//ruta para ver todos los carts
+router.get("/", cartController.getAllCarts)
 //funcionan
 router.post("/", cartController.newCart)
 router.get("/:cid", cartController.getCartById)

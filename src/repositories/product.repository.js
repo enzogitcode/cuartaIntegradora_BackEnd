@@ -23,9 +23,8 @@ class ProductRepository {
             }
             return product
         } catch (error) {
-            console.log(error)
+            console.log(("no existe un producto con ese Id"), error)
         }
-        return product
     }
     async addProduct({ title, description, price, img, code, stock, category, thumbnails }) {
         try {

@@ -2,6 +2,14 @@ import CartModel from '../models/cart.model.js';
 import ProductModel from '../models/product.model.js';
 
 class CartRepository {
+    async getAllCarts() {
+        try {
+            const carts = await CartModel.find()
+            return carts
+        } catch (error) {
+            console.log(error)
+        }
+    }
     async createCart() { //funciona
         try {
             const newCart = new CartModel({ products: [] });
@@ -12,7 +20,7 @@ class CartRepository {
             throw error;
         }
     }
-    async getCartById(cartId) { 
+    async getCartById(cartId) {
         //funciona
         try {
             const cart = await CartModel.findById(cartId)
@@ -31,7 +39,7 @@ class CartRepository {
 
         try {
 
-            const cart = await CartModel.findById(cartId);
+            const cart = await CartModel.findByIdAndUpdate(cartId);
 
             if (!cart) {
 
@@ -72,14 +80,14 @@ class CartRepository {
 
     async updateCart(cartId, updatedProducts) {
         try {
-            const cart = await CartModel.findById(cartId)
+            const cart = await CartModel.findByIdAndUpdate(cartId)
             if (!cart) {
                 console.log("Carrito no encontrado");
             }
             cart.products = updatedProducts
             cart.markModified("products")
+            await cart.save()
             return cart
-
         } catch (error) {
             console.log("No se pudo actualizar el carrito", error)
             throw error
@@ -91,7 +99,6 @@ class CartRepository {
             const cart = await CartModel.findByIdAndUpdate(cartId);
 
             if (!cart) {
-
                 throw new Error('Carrito no encontrado');
             }
 
@@ -99,7 +106,6 @@ class CartRepository {
 
             if (productIndex !== -1) {
                 cart.products[productIndex].quantity = newQuantity;
-
                 cart.markModified('products');
 
                 await cart.save();
@@ -109,8 +115,9 @@ class CartRepository {
             }
 
         } catch (error) {
-            throw new Error("Error al actualizar las cantidades");
             console.log(error)
+            //throw new Error('Error al actualizar las cantidades');
+
         }
 
     }
@@ -133,7 +140,7 @@ class CartRepository {
     }
     async clearCart(cartId) {
         try {
-            const cart = await CartModel.findByIdAndUpdate(cartId, { products: [] }, { new: true }, {"__v": 0})
+            const cart = await CartModel.findByIdAndUpdate(cartId, { products: [] }, { new: true }, { "__v": 0 })
             if (!cart) {
                 throw new Error("carrito no encontrado")
             }
@@ -143,6 +150,9 @@ class CartRepository {
             console.log(error)
 
         }
+    }
+    async purchase() {
+
     }
 
 }
