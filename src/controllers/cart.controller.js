@@ -91,7 +91,7 @@ class CartController {
         const productId = req.params.pid
         const newQuantity = req.body;
         try {
-            const updatedCart = await cartRepository.updateProductQuantity(cartId, productId, newQuantity);
+            const updatedCart = await cartRepository.updateProductQuantity(cartId, productId, newQuantity.quantity);
             res.json(updatedCart);
         } catch (error) {
             console.log(error)

@@ -103,11 +103,9 @@ class CartRepository {
             }
 
             const productIndex = cart.products.findIndex(item => item._id.toString() === productId);
-
             if (productIndex !== -1) {
                 cart.products[productIndex].quantity = newQuantity;
                 cart.markModified('products');
-
                 await cart.save();
                 return cart;
             } else {
