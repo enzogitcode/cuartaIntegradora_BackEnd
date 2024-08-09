@@ -3,6 +3,7 @@ import CartModel from '../models/cart.model.js'
 import UserRepository from '../repositories/user.repository.js'
 const userRepository = new UserRepository()
 import { createHash, isValidPassword } from '../utils/hashbcrypt.js'
+import { uploader } from '../utils/multer.js'
 
 class UserController {
     async register(req, res) {
@@ -20,7 +21,7 @@ class UserController {
                 last_name,
                 email,
                 age,
-                password: createHash(),
+                password: createHash(password),
                 carts: newCart._id,
                 role,
                 documents,
@@ -57,8 +58,13 @@ class UserController {
 
     }
     async profile(req, res) {
-
-        res.render("profile", { user: req.session.user });
+        try {
+            if (req.session.user) {
+                res.render("profile", { user: req.session.user })
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     async logout(req, res) {
@@ -71,15 +77,16 @@ class UserController {
 
     }
     async uploadFiles(req, res) {
-        if (req.session.login) {
-            if (!req.file) {
-                return res.status(400).send({ status: "error", error: "No se pudo guardar la imagen" })
-            }
-            console.log(req.file)
-            let user= req.session.user
-            user.documents= req.file.path
-            res.send({status: "success", message: "Image Uploaded"})
+        const uid = req.params.uid
+        const user = await UserController.findOne(uid)
+        
+        if (!req.file) {
+            return res.status(400).send({ status: "error", error: "No se pudo guardar la imagen" })
         }
+        console.log(req.file)
+        user.documents = req.file.path
+        res.send({ status: "success", message: "Image Uploaded" })
+
     }
 }
 

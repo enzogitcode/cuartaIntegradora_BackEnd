@@ -6,7 +6,6 @@ import { uploader } from '../utils/multer.js'
 
 router.post("/login", userController.login)
 router.post("/register", userController.register)
-router.get("/profile", userController.profile)
 
 //nueva ruta cambiar roles
 //sólo actualizar a premium si han cargado: Identificación, Comprobante de domicilio, Comprobante de estado de cuenta

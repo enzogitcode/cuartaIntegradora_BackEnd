@@ -11,7 +11,7 @@ app.use(express.static('./src/public'))
 //handlebars
 import exphbs from 'express-handlebars'
 app.engine('handlebars', exphbs.engine());
-app.set('view engine', 'hbs');
+app.set('view engine', 'handlebars');
 app.set('views', './src/views');
 
 //routers
