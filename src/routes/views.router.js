@@ -5,5 +5,6 @@ const viewController= new ViewsController()
 
 router.get("/login", viewController.renderLogin)
 router.get("/register", viewController.renderRegister)
+router.get("/profile", viewController.renderProfile)
 
 export default router
