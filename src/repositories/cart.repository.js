@@ -1,5 +1,8 @@
 import CartModel from '../models/cart.model.js';
-import ProductModel from '../models/product.model.js';
+import UserModel from '../models/user.model.js'
+import TicketModel from '../models/ticket.model.js';
+import { v4 as uuidv4 } from 'uuid'
+const ticketCode = uuidv4()
 
 class CartRepository {
     async getAllCarts() {
@@ -149,7 +152,35 @@ class CartRepository {
 
         }
     }
-    async purchase() {
+    async purchase(cid) {
+        try {
+            const user = await UserModel.findOneAndUpdate({ cartId:cid })
+            if (!user) {
+                console.log("No existe un usuario con ese email")
+            }
+            const cart = user.carts.findIndex(item => item._id.toString() === cartId)
+            if (cart !== -1) {
+                const newTicket = await TicketModel.create({
+                    email: email,
+                    code: ticketCode,
+                    purchase_dateTime: Date.toString(),
+                    amount,
+                    purchaser
+                })
+
+                await newTicket.save()
+                user.markModified('carts');
+                await user.save();
+                return user;
+
+            }
+            else {
+                throw new Error('Carrito no encontrado');
+            }
+
+        } catch (error) {
+
+        }
 
     }
 

@@ -33,14 +33,15 @@ class ProductRepository {
                 return;
             }
 
-            const existeProducto = await ProductModel.findOne({ code: code });
+            const productExist = await ProductModel.findOne({ code: code });
 
-            if (existeProducto) {
+            if (productExist) {
                 console.log("El código debe ser único");
                 return;
             }
 
             const newProduct = new ProductModel({
+                owner,
                 title,
                 description,
                 price,

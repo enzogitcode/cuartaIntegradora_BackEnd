@@ -12,10 +12,9 @@ router.post("/:cid/products/:pid", cartController.addProducts)
 router.delete("/:cid/products/:pid", cartController.deleteProduct)
 router.delete("/:cid", cartController.clearCart)
 router.put("/:cid", cartController.updateCart)
-//no funcionan
 router.put("/:cid/products/:pid", cartController.updateQuantity)
 
-
+//no funciona aún
 router.post("/:cid/purchase", cartController.purchase)
 
 export default router

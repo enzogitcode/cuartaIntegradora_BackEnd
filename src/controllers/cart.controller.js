@@ -1,9 +1,15 @@
 import CartRepository from "../repositories/cart.repository.js"
 const cartRepository = new CartRepository()
+import ProductRepository from '../repositories/product.repository.js'
+const productRepository = new ProductRepository()
+import TicketModel from "../models/ticket.model.js"
+import { v4 as uuidv4 } from 'uuid'
+const ticketCode = uuidv4()
+
 class CartController {
-    async getAllCarts (req, res) {
+    async getAllCarts(req, res) {
         try {
-            const carts= await cartRepository.getAllCarts()
+            const carts = await cartRepository.getAllCarts()
             res.json(carts)
         } catch (error) {
             console.log(error)
@@ -81,6 +87,7 @@ class CartController {
         const updatedProducts = req.body
         try {
             const cart = await cartRepository.updateCart(cartId, updatedProducts)
+            console.log("Carrito actualizado con éxito")
             res.json(cart)
         } catch (error) {
             console.log(error)
@@ -92,6 +99,7 @@ class CartController {
         const newQuantity = req.body;
         try {
             const updatedCart = await cartRepository.updateProductQuantity(cartId, productId, newQuantity.quantity);
+            console.log("Cantidades actualizadas con éxito")
             res.json(updatedCart);
         } catch (error) {
             console.log(error)
@@ -112,8 +120,20 @@ class CartController {
         }
 
     }
-    async purchase(req, res) { 
-        
+    async purchase(req, res) {
+        const cartId = req.params.cid
+        const cart = await cartRepository.getCartById(cartId)
+        if (cart !== -1) {
+            const newTicket = await TicketModel.create({
+                email: email,
+                code: ticketCode,
+                purchase_dateTime: Date.toString(),
+                amount,
+                purchaser
+            })
+        }
+
     }
 }
+
 export default CartController
