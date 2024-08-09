@@ -1,6 +1,10 @@
 import mongoose from 'mongoose'
 
 const productSchema = new mongoose.Schema({
+    owner: {
+        type: String,
+        default: 'admin'
+    },
     title: {
         type: String,
         required: true

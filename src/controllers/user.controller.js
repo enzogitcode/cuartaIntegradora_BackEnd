@@ -6,7 +6,7 @@ import { createHash, isValidPassword } from '../utils/hashbcrypt.js'
 
 class UserController {
     async register(req, res) {
-        let { first_name, last_name, email, age, password, cart, role } = req.body
+        let { first_name, last_name, email, age, password, carts, role, documents, last_connection } = req.body
         try {
             const user = await userRepository.getUserByEmail({ email })
             if (user) {
@@ -21,8 +21,10 @@ class UserController {
                 email,
                 age,
                 password: createHash(),
-                cart: newCart._id,
-                role
+                carts: newCart._id,
+                role,
+                documents,
+                last_connection
             })
             await newUser.save()
             req.session.login = true;
@@ -67,6 +69,17 @@ class UserController {
     }
     async admin() {
 
+    }
+    async uploadFiles(req, res) {
+        if (req.session.login) {
+            if (!req.file) {
+                return res.status(400).send({ status: "error", error: "No se pudo guardar la imagen" })
+            }
+            console.log(req.file)
+            let user= req.session.user
+            user.documents= req.file.path
+            res.send({status: "success", message: "Image Uploaded"})
+        }
     }
 }
 
