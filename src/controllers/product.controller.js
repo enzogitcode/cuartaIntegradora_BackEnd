@@ -5,8 +5,8 @@ class ProductController {
     async getProducts(req, res) {
         try {
             const products = await productRepository.getProducts()
-            
-            res.json(products)
+            res.render('index', {products: products})
+            //res.json(products)
 
         } catch (error) {
             console.log(error)

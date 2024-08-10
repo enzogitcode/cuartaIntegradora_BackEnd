@@ -8,10 +8,17 @@ class ViewsController {
         res.render("register");
     }
     async renderProfile(req, res) {
-        if (!req.session.login) {
-        return res.redirect("/")
+        /* if (!req.session.login) {
+            return res.redirect("/")
+        } */
+        //res.render("profile", { user: req.session.user });
+        res.render("profile")
     }
-    res.render("profile", { user: req.session.user });
+    async renderUploader(req, res) {
+        res.render ("uploader")
+    }
+    async renderRealTimeProducts(req, res) {
+        res.render ("realTimeProducts")
     }
 }
 

@@ -26,7 +26,7 @@ class ProductRepository {
             console.log(("no existe un producto con ese Id"), error)
         }
     }
-    async addProduct({ title, description, price, img, code, stock, category, thumbnails }) {
+    async addProduct({ title, description, price, img, code, stock, category, thumbnails, owner }) {
         try {
             if (!title || !description || !price || !stock || !category) {
                 console.log("Todos los campos son obligatorios");
@@ -45,10 +45,10 @@ class ProductRepository {
                 title,
                 description,
                 price,
-                img,
-                code: randomCode,
                 stock,
                 category,
+                img,
+                code: randomCode,
                 status: true,
                 thumbnails: thumbnails || []
             });
