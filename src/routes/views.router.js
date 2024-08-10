@@ -1,10 +1,12 @@
 import express from 'express'
 const router= express.Router()
 import ViewsController from '../controllers/view.controller.js'
-const viewController= new ViewsController()
+const viewsController= new ViewsController()
 
-router.get("/login", viewController.renderLogin)
-router.get("/register", viewController.renderRegister)
-router.get("/profile", viewController.renderProfile)
+router.get("/login", viewsController.renderLogin)
+router.get("/register", viewsController.renderRegister)
+router.get("/profile", viewsController.renderProfile)
+router.get("/uploader", viewsController. renderUploader)
+router.get("/realtimeproducts", viewsController.renderRealTimeProducts)
 
 export default router
