@@ -4,7 +4,7 @@ import {randomCode} from '../utils/randomCode.js'
 class ProductRepository {
     async getProducts() {
         try {
-            const products = await ProductModel.find()
+            const products = await ProductModel.find().lean()
             
             return products
 
@@ -16,7 +16,7 @@ class ProductRepository {
     async getProductById(id) {
 
         try {
-            const product = await ProductModel.findById(id)
+            const product = await ProductModel.findById(id).lean()
             if (!product) {
                 console.log("producto no encontrado")
                 return null
@@ -52,7 +52,6 @@ class ProductRepository {
                 status: true,
                 thumbnails: thumbnails || []
             });
-            console.log(newProduct.code)
             await newProduct.save();
 
             console.log(newProduct)

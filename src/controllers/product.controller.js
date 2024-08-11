@@ -4,8 +4,8 @@ const productRepository = new ProductRepository()
 class ProductController {
     async getProducts(req, res) {
         try {
-            const products = await productRepository.getProducts().lean()
-            res.render('index', products)
+            const products = await productRepository.getProducts()
+            res.render('index', { products: products })
             //res.json(products)
 
         } catch (error) {
@@ -16,7 +16,8 @@ class ProductController {
         let productId = req.params.pid
         try {
             const product = await productRepository.getProductById(productId);
-            res.json(product)
+            res.render('productDetails', { product: product })
+            //res.json(product)
         } catch (error) {
             console.log(error)
         }

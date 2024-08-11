@@ -3,6 +3,8 @@ import CartModel from '../models/cart.model.js'
 import UserRepository from '../repositories/user.repository.js'
 const userRepository = new UserRepository()
 import { createHash, isValidPassword } from '../utils/hashbcrypt.js'
+import jwt from 'jsonwebtoken'
+import config from '../config/config.js'
 import { uploader } from '../utils/multer.js'
 
 class UserController {
@@ -12,10 +14,9 @@ class UserController {
             const user = await userRepository.getUserByEmail({ email })
             if (user) {
                 console.log("Ya hay un usuario registrado con ese email")
-                return res.status(400).send("El usuario ya existe")
+                return res.status(400).send({ status: "failed" }, { message: "El usuario ya existe" })
             }
             const newCart = new CartModel()
-            await newCart.save()
             const newUser = new UserModel({
                 first_name,
                 last_name,
@@ -27,10 +28,17 @@ class UserController {
                 documents,
                 last_connection
             })
-            await newUser.save()
-            req.session.login = true;
-            req.session.user = { ...newUser._doc };
+            await newCart.save()
+            const userSaved = await newUser.save()
+            /* req.session.login = true;
+            req.session.user = { ...newUser._doc }; */
             console.log("Nuevo usuario creado", newUser)
+            const token = jwt.sign(
+                { id: userSaved._id }, //indica que dato quiero guardar
+                config.SECRET,
+                { expiresIn: 86400 }
+            )
+            res.status(200).json({token})
             res.redirect('api/users/profile')
 
         } catch (error) {
@@ -78,8 +86,8 @@ class UserController {
     }
     async uploadFiles(req, res) {
         const uid = req.params.uid
-        const user = await UserController.findOne(uid)
-        
+        const user = await UserModel.findById(uid)
+
         if (!req.file) {
             return res.status(400).send({ status: "error", error: "No se pudo guardar la imagen" })
         }

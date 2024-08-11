@@ -12,6 +12,11 @@ router.post("/register", userController.register)
 //router.put("/api/users/premium/:uid", userController.changeRole)
 
 //nueva ruta agregar documentos
-router.post("/:uid/documents", uploader.fields([{ name: 'profile', maxCount: 1 }, { name: 'documents', maxCount: 10 }, {name: 'products', maxCount: 10} ]), userController.uploadFiles)
+router.post("/:uid/documents", uploader.fields([
+    { name: 'profile', maxCount: 1 },
+    { name: 'products', maxCount: 10 },
+    { name: 'documents', maxCount: 3 }
+]),
+    userController.uploadFiles)
 
 export default router
