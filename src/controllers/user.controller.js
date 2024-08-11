@@ -4,19 +4,21 @@ import UserRepository from '../repositories/user.repository.js'
 const userRepository = new UserRepository()
 import { createHash, isValidPassword } from '../utils/hashbcrypt.js'
 import jwt from 'jsonwebtoken'
+import passport from 'passport'
 import config from '../config/config.js'
-import { uploader } from '../utils/multer.js'
+const SECRET= config.SECRET
+import { uploader } from '../middleware/multer.js'
 
 class UserController {
     async register(req, res) {
         let { first_name, last_name, email, age, password, carts, role, documents, last_connection } = req.body
         try {
-            const user = await userRepository.getUserByEmail({ email })
+            const user = await userRepository.getUserByEmail(email)
             if (user) {
                 console.log("Ya hay un usuario registrado con ese email")
                 return res.status(400).send({ status: "failed" }, { message: "El usuario ya existe" })
             }
-            const newCart = new CartModel()
+            const newCart = new CartModel();
             const newUser = new UserModel({
                 first_name,
                 last_name,
@@ -38,7 +40,10 @@ class UserController {
                 config.SECRET,
                 { expiresIn: 86400 }
             )
-            res.status(200).json({token})
+            res.cookie("coderCookieToken", token, {
+                maxAge: 86400,
+                httpOnly: true
+            })
             res.redirect('api/users/profile')
 
         } catch (error) {
@@ -58,6 +63,11 @@ class UserController {
             if (!isValid) {
                 return res.status(401).send("Contraseña incorrecta");
             }
+            const token= jwt.sign({user:user}, SECRET, {expiresIn: 86400})
+            res.cookie("coderCookieToken", token, {
+                maxAge: 86400,
+                httpOnly: true
+            })
             res.redirect('api/users/profile')
         } catch (error) {
             res.json(error)
