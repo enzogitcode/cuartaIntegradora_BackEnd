@@ -12,7 +12,7 @@ class ViewsController {
             return res.redirect("/")
         } */
         //res.render("profile", { user: req.session.user });
-        res.render("profile")
+        res.render("profile", {user: user})
     }
     async renderUploader(req, res) {
         res.render ("uploader")

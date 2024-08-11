@@ -2,7 +2,7 @@ import express from 'express'
 const router = express.Router()
 import UserController from '../controllers/user.controller.js'
 const userController = new UserController()
-import { uploader } from '../utils/multer.js'
+import {uploader} from '../middleware/multer.js'
 
 router.post("/login", userController.login)
 router.post("/register", userController.register)
