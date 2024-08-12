@@ -1,14 +1,14 @@
 import express from 'express';
-const app= express();
+const app = express();
 import config from './src/config/config.js';
-const port= config.port
+const port = config.port
 import './database.js'
 
 import passport from 'passport';
 import initializePassport from './src/config/passport.config.js';
 
-app.use (express.json ());
-app.use (express.urlencoded ({extended:true}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static('./src/public'))
 app.use(cookieParser())
 
@@ -35,4 +35,6 @@ app.set('view engine', 'handlebars');
 app.set('views', './src/views');
 
 //listen
-app.listen (port, ()=> { console.log(`Escuchando el puerto ${port}`);})
+app.listen(port, () => {
+    console.log(`Escuchando el puerto ${port}`);
+})
