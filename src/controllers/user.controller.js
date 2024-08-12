@@ -16,7 +16,7 @@ class UserController {
             const user = await userRepository.getUserByEmail(email)
             if (user) {
                 console.log("Ya hay un usuario registrado con ese email")
-                return res.status(400).send({ status: "failed" }, { message: "El usuario ya existe" })
+                return res.status(400).send({ message: "El usuario ya existe" })
             }
             const newCart = new CartModel();
             const newUser = new UserModel({
@@ -36,15 +36,14 @@ class UserController {
             req.session.user = { ...newUser._doc }; */
             console.log("Nuevo usuario creado", userSaved)
             const token = jwt.sign(
-                { id: userSaved._id }, //indica que dato quiero guardar
+                { user: userSaved }, //indica que dato quiero guardar
                 config.SECRET,
                 { expiresIn: 86400 }
             )
             res.cookie("coderCookieToken", token, {
                 maxAge: 86400,
                 httpOnly: true
-            }).redirect('api/users/profile')
-            
+            }).redirect('/api/users/profile')
 
         } catch (error) {
             console.log("Error al registrar el usuario", error)
@@ -63,14 +62,14 @@ class UserController {
             if (!isValid) {
                 return res.status(401).send("Contraseña incorrecta");
             }
-            user.last_connection= new Date()
-            const userSaved= await user.save()
+            user.last_connection = new Date()
+            const userSaved = await user.save()
             const token = jwt.sign({ user: userSaved }, SECRET, { expiresIn: 86400 })
             res.cookie("coderCookieToken", token, {
                 maxAge: 86400,
                 httpOnly: true
             }).redirect('/api/users/profile')
-            
+//este redirect funciona
         } catch (error) {
             res.json(error)
             console.log(error)
@@ -79,7 +78,7 @@ class UserController {
     }
     async profile(req, res) {
         try {
-            res.render("profile", {user: req.user.user})
+            res.render("profile", { user: req.user.user })
 
         } catch (error) {
             console.log(error)
@@ -98,23 +97,70 @@ class UserController {
             }
         }
         res.clearCookie("coderCookieToken").redirect("/login")
-        
-    }
-    async admin() {
 
     }
     async uploadFiles(req, res) {
         const uid = req.params.uid
-        const user = await UserModel.findById(uid)
+        try {
+            const user = await UserModel.findByIdAndUpdate(uid)
+            if (!req.file) {
+                return res.status(400).send({ status: "error", error: "No se pudo guardar la imagen" })
+            }
+            console.log(req.file)
+            user.documents = req.file.path
+            res.send({ status: "success", message: "Image Uploaded" })
 
-        if (!req.file) {
-            return res.status(400).send({ status: "error", error: "No se pudo guardar la imagen" })
+
+        } catch (error) {
+            console.log(error)
+            res.send(error)
         }
-        console.log(req.file)
-        user.documents = req.file.path
-        res.send({ status: "success", message: "Image Uploaded" })
+    }
 
+    async changeRoles(req, res) {
+        const { uid } = req.params
+        try {
+            const user = await UserModel.findByIdAndUpdate({ _id: uid })
+            if (!user) {
+                console.log("No existe un usuario con ese Id")
+                res.send("No existe un usuario con ese Id")
+            }
+            console.log(user.role)
+            await user.save()
+            return user;
+
+
+        } catch (error) {
+            console.log(error)
+            res.send(error)
+        }
+    }
+    async getAllUsers(req, res) {
+        try {
+            const users = await UserModel.find()
+            res.json(users)
+        } catch (error) {
+            res.status(500).send({ message: "No se pueden ver los usuarios" })
+            console.log(error)
+        }
+    }
+    async deleteUser(req, res) {
+        const { uid } = req.params
+        try {
+            const user = await UserModel.findByIdAndDelete({ _id: uid })
+            if (!user) {
+                res.send({ message: "no existe un user con ese Id" })
+
+            }
+            res.status(201).send({ message: "usuario eliminado con éxito" })
+            console.log("usuario eliminado con éxito", user)
+
+        } catch (error) {
+            res.send(error)
+            console.log(error)
+        }
     }
 }
+
 
 export default UserController

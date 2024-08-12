@@ -5,6 +5,8 @@ const userController = new UserController()
 import passport from 'passport'
 import {uploader} from '../middleware/multer.js'
 
+router.get("/", userController.getAllUsers)
+router.delete("/:uid", userController.deleteUser)
 router.post("/login", userController.login)
 router.post("/register", userController.register)
 router.post("/logout", userController.logout)
@@ -21,6 +23,6 @@ userController.uploadFiles)
 
 //nueva ruta cambiar roles
 //sólo actualizar a premium si han cargado: Identificación, Comprobante de domicilio, Comprobante de estado de cuenta
-//router.put("/api/users/premium/:uid", userController.changeRole)
+router.put("/api/users/premium/:uid", userController.changeRoles)
 
 export default router

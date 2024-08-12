@@ -5,6 +5,8 @@ const productRepository = new ProductRepository()
 import TicketModel from "../models/ticket.model.js"
 import { v4 as uuidv4 } from 'uuid'
 const ticketCode = uuidv4()
+import {totalPurchase} from '../utils/totalPurchase.js'
+
 
 class CartController {
     async getAllCarts(req, res) {
@@ -122,16 +124,26 @@ class CartController {
     }
     async purchase(req, res) {
         const cartId = req.params.cid
-        const cart = await cartRepository.getCartById(cartId)
-        if (cart !== -1) {
+        try {
+            const cart = await cartRepository.getCartById(cartId)
+            if (!cart) {
+                console.log("No existe un carrito con ese Id")
+                res.send("No existe un carrito con ese Id")
+            }
             const newTicket = await TicketModel.create({
                 email: email,
                 code: ticketCode,
                 purchase_dateTime: Date.toString(),
-                amount,
+                amount: totalPurchase(),
                 purchaser
             })
+
+
+        } catch (error) {
+
         }
+
+
 
     }
 }
