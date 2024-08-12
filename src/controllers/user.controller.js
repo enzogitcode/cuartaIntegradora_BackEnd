@@ -6,7 +6,7 @@ import { createHash, isValidPassword } from '../utils/hashbcrypt.js'
 import jwt from 'jsonwebtoken'
 import passport from 'passport'
 import config from '../config/config.js'
-const SECRET= config.SECRET
+const SECRET = config.SECRET
 import { uploader } from '../middleware/multer.js'
 
 class UserController {
@@ -34,7 +34,7 @@ class UserController {
             const userSaved = await newUser.save()
             /* req.session.login = true;
             req.session.user = { ...newUser._doc }; */
-            console.log("Nuevo usuario creado", newUser)
+            console.log("Nuevo usuario creado", userSaved)
             const token = jwt.sign(
                 { id: userSaved._id }, //indica que dato quiero guardar
                 config.SECRET,
@@ -43,8 +43,8 @@ class UserController {
             res.cookie("coderCookieToken", token, {
                 maxAge: 86400,
                 httpOnly: true
-            })
-            res.redirect('api/users/profile')
+            }).redirect('api/users/profile')
+            
 
         } catch (error) {
             console.log("Error al registrar el usuario", error)
@@ -54,7 +54,7 @@ class UserController {
     async login(req, res) {
         let { email, password } = req.body
         try {
-            const user = await findOne({ email })
+            const user = await userRepository.getUserByEmail(email)
             if (!user) {
                 console.log("usuario no encontrado")
                 res.json("usuario no encontrado")
@@ -63,12 +63,14 @@ class UserController {
             if (!isValid) {
                 return res.status(401).send("Contraseña incorrecta");
             }
-            const token= jwt.sign({user:user}, SECRET, {expiresIn: 86400})
+            user.last_connection= new Date()
+            const userSaved= await user.save()
+            const token = jwt.sign({ user: userSaved }, SECRET, { expiresIn: 86400 })
             res.cookie("coderCookieToken", token, {
                 maxAge: 86400,
                 httpOnly: true
-            })
-            res.redirect('api/users/profile')
+            }).redirect('/api/users/profile')
+            
         } catch (error) {
             res.json(error)
             console.log(error)
@@ -77,19 +79,26 @@ class UserController {
     }
     async profile(req, res) {
         try {
-            if (req.session.user) {
-                res.render("profile", { user: req.session.user })
-            }
+            res.render("profile", {user: req.user.user})
+
         } catch (error) {
             console.log(error)
         }
     }
 
     async logout(req, res) {
-        if (req.session.login) {
-            req.session.destroy();
+        if (req.user) {
+            try {
+                req.user.last_connection = new Date();
+                await req.user.save();
+            } catch (error) {
+                console.error(error);
+                res.status(500).send("Error interno del servidor");
+                return;
+            }
         }
-        res.redirect("api/users/login")
+        res.clearCookie("coderCookieToken").redirect("/login")
+        
     }
     async admin() {
 
