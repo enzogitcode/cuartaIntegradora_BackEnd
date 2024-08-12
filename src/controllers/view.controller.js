@@ -1,4 +1,5 @@
-import passport from "passport";
+import jwt from 'jsonwebtoken'
+import passport from 'passport'
 class ViewsController {
     async renderLogin(req, res) {
         res.render("login");
@@ -12,6 +13,9 @@ class ViewsController {
     }
     async renderRealTimeProducts(req, res) {
         res.render ("realTimeProducts")
+    }
+    async renderProfile(req, res) {
+        res.render ("profile")
     }
 }
 
