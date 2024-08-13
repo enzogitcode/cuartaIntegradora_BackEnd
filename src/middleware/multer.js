@@ -28,7 +28,7 @@ function fileFilter (req, file, cb) {
     if (allowedNames.includes(basename) && extname) {
       cb(null, true);
     } else {
-      cb(new Error('Solo se permite subir archivos llamados "profile" o "credencial" con extensiones válidas en el campo "documents"'));
+      cb(new Error('Solo se permite subir archivos llamados "Identificación", "Comprobante de domicilio" o "Comprobante de estado de cuenta" con extensiones válidas en el campo "documents"'));
     }
   } else {
     cb(null, true); 

@@ -5,8 +5,8 @@ const viewsController= new ViewsController()
 
 router.get("/login", viewsController.renderLogin)
 router.get("/register", viewsController.renderRegister)
-router.get("/uploader", viewsController. renderUploader)
 router.get("/realtimeproducts", viewsController.renderRealTimeProducts)
 router.get("/profile", viewsController.renderProfile)
+router.get("/uploader", viewsController. renderUploader)
 
 export default router

@@ -62,9 +62,9 @@ class UserController {
             }
             user.last_connection = new Date()
             const userSaved = await user.save()
-            const token = jwt.sign({ user: userSaved }, SECRET, { expiresIn: 86400 })
+            const token = jwt.sign({ user: userSaved }, SECRET, { expiresIn: "24h" })
             res.cookie("coderCookieToken", token, {
-                maxAge: 86400,
+                maxAge: 3600000,
                 httpOnly: true
             }).redirect('/api/users/profile')
             //este redirect funciona
@@ -109,16 +109,16 @@ class UserController {
 
 
     async uploadFiles(req, res) {
-        const uid = req.params.uid
+        const {uid} = req.params
         try {
-            const user = await UserModel.findByIdAndUpdate(uid)
+            const user = await UserModel.findById(uid)
             if (!req.file) {
                 return res.status(400).send({ status: "error", error: "No se pudo guardar la imagen" })
             }
-            console.log(req.file)
             user.documents = req.file.path
+            console.log(user.documents)
+            await user.save()
             res.send({ status: "success", message: "Image Uploaded" })
-
 
         } catch (error) {
             console.log(error)

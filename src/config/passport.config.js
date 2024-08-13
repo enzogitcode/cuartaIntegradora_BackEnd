@@ -1,7 +1,7 @@
 import passport from "passport";
 import jwt, { Strategy } from 'passport-jwt'
 import config from './config.js'
-const SECRET= config.SECRET
+const SECRET = config.SECRET
 
 const JWTStrategy = jwt.Strategy;
 const ExtractJwt = jwt.ExtractJwt;
@@ -19,11 +19,11 @@ const initializePassport = () => {
             }
         }))
 }
-const cookieExtractor = (req) => {
+const cookieExtractor = req => {
     let token = null
     if (req && req.cookies) {
         token = req.cookies["coderCookieToken"]
     }
     return token
 }
-export {initializePassport, cookieExtractor}
+export { initializePassport, cookieExtractor }
