@@ -32,13 +32,11 @@ class UserController {
             })
             await newCart.save()
             const userSaved = await newUser.save()
-            /* req.session.login = true;
-            req.session.user = { ...newUser._doc }; */
             console.log("Nuevo usuario creado", userSaved)
             const token = jwt.sign(
                 { user: userSaved }, //indica que dato quiero guardar
                 config.SECRET,
-                { expiresIn: 86400 }
+                { expiresIn: "24h" }
             )
             res.cookie("coderCookieToken", token, {
                 maxAge: 86400,
@@ -63,13 +61,14 @@ class UserController {
                 return res.status(401).send("Contraseña incorrecta");
             }
             user.last_connection = new Date()
+            console.log(user.last_connection)
             const userSaved = await user.save()
             const token = jwt.sign({ user: userSaved }, SECRET, { expiresIn: 86400 })
             res.cookie("coderCookieToken", token, {
                 maxAge: 86400,
                 httpOnly: true
             }).redirect('/api/users/profile')
-//este redirect funciona
+            //este redirect funciona
         } catch (error) {
             res.json(error)
             console.log(error)
@@ -86,19 +85,29 @@ class UserController {
     }
 
     async logout(req, res) {
-        if (req.user) {
-            try {
-                req.user.last_connection = new Date();
-                await req.user.save();
-            } catch (error) {
-                console.error(error);
-                res.status(500).send("Error interno del servidor");
-                return;
+        //parte que no funciona
+        try {
+            const token = req.cookies["coderCookieToken"]
+            if (token) {
+                const decoded = jwt.verify(token, SECRET)
+                req.user = decoded
+                console.log(decoded)
+                const userId = decoded.user._id
+                const updatedUser = await UserModel.findByIdAndUpdate(userId)
+                updatedUser.last_connection = new Date();
+                await updatedUser.save()
+                console.log(updatedUser)
             }
+        } catch (error) {
+            console.error(error);
+            res.status(500).send("Error interno del servidor");
+            return;
         }
         res.clearCookie("coderCookieToken").redirect("/login")
-
+        //esta parte si
     }
+
+
     async uploadFiles(req, res) {
         const uid = req.params.uid
         try {

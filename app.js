@@ -5,7 +5,7 @@ const port = config.port
 import './database.js'
 
 import passport from 'passport';
-import initializePassport from './src/config/passport.config.js';
+import { initializePassport, cookieExtractor } from './src/config/passport.config.js';
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

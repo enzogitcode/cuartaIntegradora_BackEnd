@@ -9,7 +9,7 @@ router.get("/", userController.getAllUsers)
 router.delete("/:uid", userController.deleteUser)
 router.post("/login", userController.login)
 router.post("/register", userController.register)
-router.post("/logout", userController.logout)
+router.post("/logout", userController.logout.bind(userController))
 router.get("/profile", passport.authenticate("jwt", {session:false}), userController.profile)
 
 //nueva ruta agregar documentos
