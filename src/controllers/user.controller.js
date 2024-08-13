@@ -61,7 +61,6 @@ class UserController {
                 return res.status(401).send("Contraseña incorrecta");
             }
             user.last_connection = new Date()
-            console.log(user.last_connection)
             const userSaved = await user.save()
             const token = jwt.sign({ user: userSaved }, SECRET, { expiresIn: 86400 })
             res.cookie("coderCookieToken", token, {
@@ -85,18 +84,19 @@ class UserController {
     }
 
     async logout(req, res) {
-        //parte que no funciona
+        const token = req.cookies["coderCookieToken"]
         try {
-            const token = req.cookies["coderCookieToken"]
             if (token) {
                 const decoded = jwt.verify(token, SECRET)
                 req.user = decoded
-                console.log(decoded)
                 const userId = decoded.user._id
+                //actualizar last_connection
                 const updatedUser = await UserModel.findByIdAndUpdate(userId)
                 updatedUser.last_connection = new Date();
                 await updatedUser.save()
-                console.log(updatedUser)
+            }
+            else {
+                res.send({message: "No se encuentra el token"})
             }
         } catch (error) {
             console.error(error);
