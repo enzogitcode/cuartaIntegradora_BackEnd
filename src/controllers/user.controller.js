@@ -111,12 +111,11 @@ class UserController {
     async uploadFiles(req, res) {
         const {uid} = req.params
         try {
-            const user = await UserModel.findById(uid)
+            const user = await UserModel.findByIdAndUpdate(uid)
             if (!req.file) {
                 return res.status(400).send({ status: "error", error: "No se pudo guardar la imagen" })
             }
             user.documents = req.file.path
-            console.log(user.documents)
             await user.save()
             res.send({ status: "success", message: "Image Uploaded" })
 
