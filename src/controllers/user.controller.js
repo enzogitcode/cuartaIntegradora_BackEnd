@@ -8,6 +8,10 @@ import passport from 'passport'
 import config from '../config/config.js'
 const SECRET = config.SECRET
 import { uploader } from '../middleware/multer.js'
+import upload from 'multer'
+import path from 'path'
+
+
 
 class UserController {
     async register(req, res) {
@@ -76,7 +80,8 @@ class UserController {
     }
     async profile(req, res) {
         try {
-            res.render("profile", { user: req.user.user })
+            //res.render("profile", { user: req.user.user })
+            res.json({ user: req.user.user })
 
         } catch (error) {
             console.log(error)
@@ -96,7 +101,7 @@ class UserController {
                 await updatedUser.save()
             }
             else {
-                res.send({message: "No se encuentra el token"})
+                res.send({ message: "No se encuentra el token" })
             }
         } catch (error) {
             console.error(error);
@@ -109,15 +114,26 @@ class UserController {
 
 
     async uploadFiles(req, res) {
-        const {uid} = req.params
+        const { uid } = req.params
+        //const userId= req.params.uid
         try {
             const user = await UserModel.findByIdAndUpdate(uid)
-            if (!req.file) {
+            if (!req.files) {
                 return res.status(400).send({ status: "error", error: "No se pudo guardar la imagen" })
             }
-            user.documents = req.file.path
+            const profileArray = { name: (req.files.profile[0].filename), reference: (req.files.profile[0].path) }
+            const myFiles = [profileArray]
+            req.files.documents.forEach(element => {
+                const arrayDocuments = { name: element.filename, reference: element.path }
+                myFiles.push(arrayDocuments)
+            })
+            req.files.products.forEach(element => {
+                const arrayProducts = { name: element.filename, reference: element.path }
+                myFiles.push(arrayProducts)
+            })
+            user.documents = myFiles
             await user.save()
-            res.send({ status: "success", message: "Image Uploaded" })
+            res.json(user)
 
         } catch (error) {
             console.log(error)
