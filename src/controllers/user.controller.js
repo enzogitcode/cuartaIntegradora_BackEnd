@@ -118,21 +118,33 @@ class UserController {
         //const userId= req.params.uid
         try {
             const user = await UserModel.findByIdAndUpdate(uid)
+            if (!user) {
+                return res.status(400).send({ status: "error", error: "No existe un usuario con ese Id" })
+            }
             if (!req.files) {
                 return res.status(400).send({ status: "error", error: "No se pudo guardar la imagen" })
             }
-            const profileArray = { name: (req.files.profile[0].filename), reference: (req.files.profile[0].path) }
-            const myFiles = [profileArray]
-            req.files.documents.forEach(element => {
-                const arrayDocuments = { name: element.filename, reference: element.path }
-                myFiles.push(arrayDocuments)
-            })
-            req.files.products.forEach(element => {
-                const arrayProducts = { name: element.filename, reference: element.path }
-                myFiles.push(arrayProducts)
-            })
-            user.documents = myFiles
+            //const profileArray = { name: (req.files.profile[0].filename), reference: (req.files.profile[0].path) }
+            if (req.files.profile) {
+                req.files.profile.map(element => {
+                    const profileObjects = { name: element.filename, reference: element.path }
+                    user.documents.push(profileObjects)
+                })
+            }
+            if (req.files.documents) {
+                req.files.documents.map(element => {
+                    const documentsObjects = { name: element.filename, reference: element.path }
+                    user.documents.push(documentsObjects)
+                })
+            }
+            if (req.files.products) {
+                req.files.products.map(element => {
+                    const productsObjects = { name: element.filename, reference: element.path }
+                    user.documents.push(productsObjects)
+                })
+            }
             await user.save()
+            console.log(user)
             res.json(user)
 
         } catch (error) {
