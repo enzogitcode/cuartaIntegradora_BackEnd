@@ -3,6 +3,9 @@ const app = express();
 import config from './src/config/config.js';
 const port = config.port
 import './database.js'
+import cors from 'cors'
+
+app.use(cors())
 
 import passport from 'passport';
 import { initializePassport, cookieExtractor } from './src/config/passport.config.js';
